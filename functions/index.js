@@ -52,22 +52,25 @@ exports.lembrete = functions.https.onRequest((request, response) => {
     response.send("Lembretes Enviados");
 });
 
-exports.scheduledFunction = functions.pubsub.schedule('0 9-22/3 * * *').onRun((context) => {
-    let db = admin.firestore()
-    const bot = new Telegraf.Telegram(functions.config().bot.token)
-    const phrases = [
-        'Beba Água 😉',
-        'Já bebeu água hoje? 🤔',
-        'Sabia que é importante se manter hidratado no calor? Beba mais água! 🎉'
-    ]
+exports.scheduledFunction = functions.pubsub
+    .schedule('0 8-23/3 * * *')
+    .timeZone('America/Sao_Paulo')
+    .onRun((context) => {
+        let db = admin.firestore()
+        const bot = new Telegraf.Telegram(functions.config().bot.token)
+        const phrases = [
+            'Beba Água 😉',
+            'Já bebeu água hoje? 🤔',
+            'Sabia que é importante se manter hidratado no calor? Beba mais água! 🎉'
+        ]
 
-    db.collection('chats').get()
-        .then(snapshot => {
-            snapshot.forEach((doc) => {
-                bot.sendMessage(
-                    doc.id,
-                    phrases[Math.floor(Math.random() * (phrases.length))]
-                );
-            });
-        })
-});
+        db.collection('chats').get()
+            .then(snapshot => {
+                snapshot.forEach((doc) => {
+                    bot.sendMessage(
+                        doc.id,
+                        phrases[Math.floor(Math.random() * (phrases.length))]
+                    );
+                });
+            })
+    });
